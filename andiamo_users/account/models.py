@@ -9,14 +9,15 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, full_name, email, phone_number, password=None):
+    def create_user(self, full_name, email, phone_number, profile_pic, password=None):
         if not email:
             raise ValueError('Users must have an email address')
 
         user = self.model(
             full_name=full_name,
             email = self.normalize_email(email),
-            phone_number=phone_number
+            phone_number=phone_number,
+            profile_pic=profile_pic
         )
 
         user.set_password(password)
@@ -42,6 +43,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     )
     full_name = models.CharField(db_index=True, max_length=255)
     phone_number = models.CharField(blank=True, help_text='Contact phone number', max_length=10)
+    profile_pic = models.ImageField(upload_to='images/owner') 
+
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=True)
@@ -77,7 +80,7 @@ class Owner(MyUser, PermissionsMixin):
     previous_longitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None)
     previous_latitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None)
     is_registered = models.BooleanField(default=False)
-    profile_pic = models.ImageField(upload_to='images/owner') 
+    # profile_pic = models.ImageField(upload_to='images/owner') 
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
 
@@ -106,7 +109,7 @@ class Driver(MyUser, PermissionsMixin):
     rate = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     is_registered = models.BooleanField(default=False)
     status = models.BooleanField(default=False)
-    profile_pic = models.ImageField(upload_to='images/driver') 
+    # profile_pic = models.ImageField(upload_to='images/driver') 
     current_latitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None)
     current_longitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None)
     previous_latitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None)
@@ -133,7 +136,7 @@ class Driver(MyUser, PermissionsMixin):
 
 class Passenger(MyUser, PermissionsMixin):
     # user = models.OneToOneField(MyUser, on_delete = models.CASCADE, primary_key = True)
-    profile_pic = models.ImageField(upload_to='images/passenger', null =True) 
+    # profile_pic = models.ImageField(upload_to='images/passenger', null =True) 
     current_latitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None, null =True)
     current_longitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None, null= True)
     previous_latitude = models.FloatField( validators=[MinValueValidator(-180), MaxValueValidator(180)], default=None, null= True)

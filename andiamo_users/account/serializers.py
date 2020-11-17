@@ -6,17 +6,27 @@ from .models import MyUser, Driver, Owner, Passenger
 class DriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
-        fields = ('id', 'full_name', 'email', 'phone_number', 'rate', 'is_registered', 'status', 'profile_pic', 'current_latitude', 'current_longitude', 'previous_latitude', 'previous_longitude')
+        fields = ('id', 'full_name', 'email', 'phone_number', 'profile_pic')
+
+    def create(self, validated_data):
+        user = Driver.objects.create_user(**validated_data)
+        Token.objects.create(user=user)
+        return user
 
 class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
-        fields = ('id', 'full_name', 'email', 'phone_number', 'current_longitude', 'current_latitude', 'previous_longitude', 'previous_latitude', 'is_registered', 'profile_pic')
+        fields = ('id', 'full_name', 'email', 'phone_number', 'password')
+    
+    def create(self, validated_data):
+        user = Owner.objects.create_user(**validated_data)
+        Token.objects.create(user=user)
+        return user
         
 class PassengerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Passenger
-        fields = ('id', 'full_name', 'email', 'phone_number')
+        fields = ('id', 'full_name', 'email', 'phone_number', 'password', 'profile_pic')
     
     def create(self, validated_data):
         user = Passenger.objects.create_user(**validated_data)
